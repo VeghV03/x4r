@@ -1,0 +1,5 @@
+erdő 100
+alma 99
+felhő 98
+almás 97
+felhők 96

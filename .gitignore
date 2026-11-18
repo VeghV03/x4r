@@ -1,0 +1,12 @@
+.DS_Store
+backups/
+.venv/
+__pycache__/
+.pio/
+firmware/.cache/
+.build-*.log
+firmware/.venv/
+.claude/worktrees/
+/build/
+/net.json
+/ical

@@ -1,0 +1,713 @@
+{
+ "filters": {
+  "season": "2026"
+ },
+ "area": {
+  "id": 2077,
+  "name": "Europe",
+  "code": "EUR"
+ },
+ "competition": {
+  "id": 2001,
+  "name": "UEFA Champions League",
+  "code": "CL",
+  "type": "CUP",
+  "emblem": ""
+ },
+ "season": {
+  "id": 2500
+ },
+ "standings": [
+  {
+   "stage": "LEAGUE_STAGE",
+   "type": "TOTAL",
+   "group": null,
+   "table": [
+    {
+     "position": 1,
+     "team": {
+      "id": 1000,
+      "name": "Club 1 Football Club Long Name",
+      "shortName": "Club Number 1 With A Long Name",
+      "tla": "C00",
+      "crest": "https://crests.football-data.org/1000.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 12,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 2,
+     "team": {
+      "id": 1001,
+      "name": "Club 2 Football Club Long Name",
+      "shortName": "Club Number 2 With A Long Name",
+      "tla": "C01",
+      "crest": "https://crests.football-data.org/1001.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 12,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 3,
+     "team": {
+      "id": 1002,
+      "name": "Club 3 Football Club Long Name",
+      "shortName": "Club Number 3 With A Long Name",
+      "tla": "C02",
+      "crest": "https://crests.football-data.org/1002.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 12,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 4,
+     "team": {
+      "id": 1003,
+      "name": "Club 4 Football Club Long Name",
+      "shortName": "Club Number 4 With A Long Name",
+      "tla": "C03",
+      "crest": "https://crests.football-data.org/1003.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 11,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 5,
+     "team": {
+      "id": 1004,
+      "name": "Club 5 Football Club Long Name",
+      "shortName": "Club Number 5 With A Long Name",
+      "tla": "C04",
+      "crest": "https://crests.football-data.org/1004.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 11,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 6,
+     "team": {
+      "id": 1005,
+      "name": "Club 6 Football Club Long Name",
+      "shortName": "Club Number 6 With A Long Name",
+      "tla": "C05",
+      "crest": "https://crests.football-data.org/1005.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 11,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 7,
+     "team": {
+      "id": 1006,
+      "name": "Club 7 Football Club Long Name",
+      "shortName": "Club Number 7 With A Long Name",
+      "tla": "C06",
+      "crest": "https://crests.football-data.org/1006.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 10,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 8,
+     "team": {
+      "id": 1007,
+      "name": "Club 8 Football Club Long Name",
+      "shortName": "Club Number 8 With A Long Name",
+      "tla": "C07",
+      "crest": "https://crests.football-data.org/1007.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 10,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 9,
+     "team": {
+      "id": 1008,
+      "name": "Club 9 Football Club Long Name",
+      "shortName": "Club Number 9 With A Long Name",
+      "tla": "C08",
+      "crest": "https://crests.football-data.org/1008.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 10,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 10,
+     "team": {
+      "id": 1009,
+      "name": "Club 10 Football Club Long Name",
+      "shortName": "Club Number 10 With A Long Name",
+      "tla": "C09",
+      "crest": "https://crests.football-data.org/1009.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 9,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 11,
+     "team": {
+      "id": 1010,
+      "name": "Club 11 Football Club Long Name",
+      "shortName": "Club Number 11 With A Long Name",
+      "tla": "C10",
+      "crest": "https://crests.football-data.org/1010.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 9,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 12,
+     "team": {
+      "id": 1011,
+      "name": "Club 12 Football Club Long Name",
+      "shortName": "Club Number 12 With A Long Name",
+      "tla": "C11",
+      "crest": "https://crests.football-data.org/1011.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 9,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 13,
+     "team": {
+      "id": 1012,
+      "name": "Club 13 Football Club Long Name",
+      "shortName": "Club Number 13 With A Long Name",
+      "tla": "C12",
+      "crest": "https://crests.football-data.org/1012.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 8,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 14,
+     "team": {
+      "id": 1013,
+      "name": "Club 14 Football Club Long Name",
+      "shortName": "Club Number 14 With A Long Name",
+      "tla": "C13",
+      "crest": "https://crests.football-data.org/1013.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 8,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 15,
+     "team": {
+      "id": 1014,
+      "name": "Club 15 Football Club Long Name",
+      "shortName": "Club Number 15 With A Long Name",
+      "tla": "C14",
+      "crest": "https://crests.football-data.org/1014.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 8,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 16,
+     "team": {
+      "id": 1015,
+      "name": "Club 16 Football Club Long Name",
+      "shortName": "Club Number 16 With A Long Name",
+      "tla": "C15",
+      "crest": "https://crests.football-data.org/1015.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 7,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 17,
+     "team": {
+      "id": 1016,
+      "name": "Club 17 Football Club Long Name",
+      "shortName": "Club Number 17 With A Long Name",
+      "tla": "C16",
+      "crest": "https://crests.football-data.org/1016.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 7,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 18,
+     "team": {
+      "id": 1017,
+      "name": "Club 18 Football Club Long Name",
+      "shortName": "Club Number 18 With A Long Name",
+      "tla": "C17",
+      "crest": "https://crests.football-data.org/1017.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 7,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 19,
+     "team": {
+      "id": 1018,
+      "name": "Club 19 Football Club Long Name",
+      "shortName": "Club Number 19 With A Long Name",
+      "tla": "C18",
+      "crest": "https://crests.football-data.org/1018.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 6,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 20,
+     "team": {
+      "id": 1019,
+      "name": "Club 20 Football Club Long Name",
+      "shortName": "Club Number 20 With A Long Name",
+      "tla": "C19",
+      "crest": "https://crests.football-data.org/1019.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 6,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 21,
+     "team": {
+      "id": 1020,
+      "name": "Club 21 Football Club Long Name",
+      "shortName": "Club Number 21 With A Long Name",
+      "tla": "C20",
+      "crest": "https://crests.football-data.org/1020.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 6,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 22,
+     "team": {
+      "id": 1021,
+      "name": "Club 22 Football Club Long Name",
+      "shortName": "Club Number 22 With A Long Name",
+      "tla": "C21",
+      "crest": "https://crests.football-data.org/1021.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 5,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 23,
+     "team": {
+      "id": 1022,
+      "name": "Club 23 Football Club Long Name",
+      "shortName": "Club Number 23 With A Long Name",
+      "tla": "C22",
+      "crest": "https://crests.football-data.org/1022.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 5,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 24,
+     "team": {
+      "id": 1023,
+      "name": "Club 24 Football Club Long Name",
+      "shortName": "Club Number 24 With A Long Name",
+      "tla": "C23",
+      "crest": "https://crests.football-data.org/1023.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 5,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 25,
+     "team": {
+      "id": 1024,
+      "name": "Club 25 Football Club Long Name",
+      "shortName": "Club Number 25 With A Long Name",
+      "tla": "C24",
+      "crest": "https://crests.football-data.org/1024.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 4,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 26,
+     "team": {
+      "id": 1025,
+      "name": "Club 26 Football Club Long Name",
+      "shortName": "Club Number 26 With A Long Name",
+      "tla": "C25",
+      "crest": "https://crests.football-data.org/1025.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 4,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 27,
+     "team": {
+      "id": 1026,
+      "name": "Club 27 Football Club Long Name",
+      "shortName": "Club Number 27 With A Long Name",
+      "tla": "C26",
+      "crest": "https://crests.football-data.org/1026.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 4,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 28,
+     "team": {
+      "id": 1027,
+      "name": "Club 28 Football Club Long Name",
+      "shortName": "Club Number 28 With A Long Name",
+      "tla": "C27",
+      "crest": "https://crests.football-data.org/1027.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 3,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 29,
+     "team": {
+      "id": 1028,
+      "name": "Club 29 Football Club Long Name",
+      "shortName": "Club Number 29 With A Long Name",
+      "tla": "C28",
+      "crest": "https://crests.football-data.org/1028.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 3,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 30,
+     "team": {
+      "id": 1029,
+      "name": "Club 30 Football Club Long Name",
+      "shortName": "Club Number 30 With A Long Name",
+      "tla": "C29",
+      "crest": "https://crests.football-data.org/1029.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 3,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 31,
+     "team": {
+      "id": 1030,
+      "name": "Club 31 Football Club Long Name",
+      "shortName": "Club Number 31 With A Long Name",
+      "tla": "C30",
+      "crest": "https://crests.football-data.org/1030.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 2,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 32,
+     "team": {
+      "id": 1031,
+      "name": "Club 32 Football Club Long Name",
+      "shortName": "Club Number 32 With A Long Name",
+      "tla": "C31",
+      "crest": "https://crests.football-data.org/1031.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 2,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 33,
+     "team": {
+      "id": 1032,
+      "name": "Club 33 Football Club Long Name",
+      "shortName": "Club Number 33 With A Long Name",
+      "tla": "C32",
+      "crest": "https://crests.football-data.org/1032.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 2,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 34,
+     "team": {
+      "id": 1033,
+      "name": "Club 34 Football Club Long Name",
+      "shortName": "Club Number 34 With A Long Name",
+      "tla": "C33",
+      "crest": "https://crests.football-data.org/1033.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 1,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 35,
+     "team": {
+      "id": 1034,
+      "name": "Club 35 Football Club Long Name",
+      "shortName": "Club Number 35 With A Long Name",
+      "tla": "C34",
+      "crest": "https://crests.football-data.org/1034.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 1,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": 0
+    },
+    {
+     "position": 36,
+     "team": {
+      "id": 81,
+      "name": "FC Barcelona",
+      "shortName": "Bar\u00e7a",
+      "tla": "FCB",
+      "crest": "https://crests.football-data.org/81.png"
+     },
+     "playedGames": 4,
+     "form": null,
+     "won": 0,
+     "draw": 0,
+     "lost": 0,
+     "points": 3,
+     "goalsFor": 0,
+     "goalsAgainst": 0,
+     "goalDifference": -3
+    }
+   ]
+  }
+ ]
+}

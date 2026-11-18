@@ -1,0 +1,25 @@
+{"word": "there", "pos": "adv", "lang_code": "en", "senses": [{"glosses": ["In that place"]}, {"glosses": ["At that point"]}], "translations": [{"word": "x"}, {"word": "x"}, {"word": "x"}]}
+{"word": "burnt", "pos": "adj", "lang_code": "en", "senses": [{"glosses": ["Damaged or injured by fire or heat"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "other", "pos": "adj", "lang_code": "en", "senses": [{"glosses": ["Second"]}, {"glosses": ["Different"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "taboo", "pos": "noun", "lang_code": "en", "senses": [{"glosses": ["Excluded or forbidden from use"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "earth", "pos": "noun", "lang_code": "en", "senses": [{"glosses": ["Soil"]}, {"glosses": ["The third planet from the sun"]}], "forms": [{"form": "earths", "tags": ["plural"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "enter", "pos": "verb", "lang_code": "en", "senses": [{"glosses": ["To go or come into a space"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "house", "pos": "noun", "lang_code": "en", "senses": [{"glosses": ["A building where people live"]}], "forms": [{"form": "houses", "tags": ["plural"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "plane", "pos": "noun", "lang_code": "en", "senses": [{"glosses": ["An aircraft"]}, {"glosses": ["A flat surface"]}], "forms": [{"form": "planes", "tags": ["plural"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "planet", "pos": "noun", "lang_code": "en", "senses": [{"glosses": ["A body orbiting a star"]}], "forms": [{"form": "planets", "tags": ["plural"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "plan", "pos": "noun", "lang_code": "en", "senses": [{"glosses": ["A set of intended actions"]}], "forms": [{"form": "plans", "tags": ["plural"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "ant", "pos": "noun", "lang_code": "en", "senses": [{"glosses": ["A small social insect"]}], "forms": [{"form": "ants", "tags": ["plural"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "heard", "pos": "verb", "lang_code": "en", "senses": [{"glosses": ["simple past of hear"], "form_of": [{"word": "hear"}], "tags": ["form-of"]}]}
+{"word": "hear", "pos": "verb", "lang_code": "en", "senses": [{"glosses": ["To perceive sounds"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "debby", "pos": "adj", "lang_code": "en", "senses": [{"glosses": ["Like a debutante"]}]}
+{"word": "Debby", "pos": "name", "lang_code": "en", "senses": [{"glosses": ["A female given name"]}]}
+{"word": "London", "pos": "name", "lang_code": "en", "senses": [{"glosses": ["The capital of the United Kingdom"]}]}
+{"word": "shite", "pos": "noun", "lang_code": "en", "senses": [{"glosses": ["Excrement"], "tags": ["vulgar"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "scuba", "pos": "noun", "lang_code": "en", "senses": [{"glosses": ["Self-contained underwater breathing apparatus"], "tags": ["acronym"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "colour", "pos": "noun", "lang_code": "en", "senses": [{"glosses": ["Alternative spelling of color"], "alt_of": [{"word": "color"}]}]}
+{"word": "color", "pos": "noun", "lang_code": "en", "senses": [{"glosses": ["The spectral composition of visible light"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "olden", "pos": "adj", "lang_code": "en", "senses": [{"glosses": ["Of old"], "tags": ["archaic"]}], "translations": [{"word": "x"}, {"word": "x"}]}
+{"word": "felhő", "pos": "noun", "lang_code": "hu", "senses": [{"glosses": ["cloud"]}], "forms": [{"form": "felhők", "tags": ["plural"]}, {"form": "felhőt", "tags": ["plural"]}]}
+{"word": "erdő", "pos": "noun", "lang_code": "hu", "senses": [{"glosses": ["forest"]}], "forms": [{"form": "erdők", "tags": ["plural"]}]}
+{"word": "alma", "pos": "noun", "lang_code": "hu", "senses": [{"glosses": ["apple"]}], "forms": [{"form": "almák", "tags": ["plural"]}]}
+{"word": "almás", "pos": "adj", "lang_code": "hu", "senses": [{"glosses": ["containing apples"]}]}

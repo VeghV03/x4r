@@ -1,0 +1,21 @@
+# Manifest for src/components/icons/menuIcons.h, the x4r row icons (Today, Football and Play).
+# Regenerate from firmware/ with:
+#   python3 freeink-sdk/libs/assets/Icons/tools/gen_icons.py \
+#     --manifest src/components/icons/menuIcons.manifest \
+#     --svgdir src/components/icons/svg \
+#     --sizes 32 --out src/components/icons/menuIcons.h
+#
+# svg/ holds every source: Lucide 1.8 icons (LUCIDE-LICENSE) and the hand-drawn
+# crossword, nonogram and football, drawn on Lucide's 24 px grid with a 2 px round stroke.
+# Book, Library and Settings reuse book-open, library and settings from listIcons.h.
+today = calendar-1
+read = newspaper
+football = football
+play = gamepad-2
+sudoku = grid-3x3
+nonogram = nonogram
+einstein = puzzle
+arith = calculator
+words = whole-word
+crossword = crossword
+chess = chess

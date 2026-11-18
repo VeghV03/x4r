@@ -1,0 +1,252 @@
+#!/usr/bin/env python3
+"""Draws the chess pieces of the tactics game as 1-bit bitmaps.
+
+Each piece is drawn from simple shapes on a 48 px grid at 8x, then reduced to 48 px.
+Four layers per piece:
+  halo    the silhouette grown by 2 px, drawn white so a piece stands clear of a gray square
+  fill    the silhouette
+  line    a 2 px outline and the inner lines: the ink of a white piece
+  detail  the inner lines alone: drawn white on a black piece
+
+Run from firmware/ (needs Pillow; `uv run --with pillow` works):
+  python3 scripts/gen_chess_pieces.py --out src/play/games/ChessPieces.h [--preview pieces.png]
+"""
+
+import argparse
+
+from PIL import Image, ImageChops, ImageDraw, ImageFilter
+
+SIZE = 48
+SCALE = 8
+LINE = 2.0  # px at 48
+
+
+def s(v):
+    return v * SCALE
+
+
+def poly(d, points):
+    d.polygon([(s(x), s(y)) for x, y in points], fill=255)
+
+
+def ellipse(d, x0, y0, x1, y1):
+    d.ellipse([s(x0), s(y0), s(x1), s(y1)], fill=255)
+
+
+def circle(d, cx, cy, r):
+    ellipse(d, cx - r, cy - r, cx + r, cy + r)
+
+
+def rect(d, x0, y0, x1, y1, r=0.0):
+    d.rounded_rectangle([s(x0), s(y0), s(x1), s(y1)], radius=s(r), fill=255)
+
+
+def base(d, top=37.0):
+    rect(d, 10, top, 38, 43, 2)
+
+
+# Each piece: (shape drawing, inner lines as polylines, dots as (x, y, r)).
+
+
+def pawn(d):
+    circle(d, 24, 12.5, 6)
+    rect(d, 16, 19.5, 32, 23.5, 2)
+    poly(d, [(19, 23), (29, 23), (33, 36), (15, 36)])
+    rect(d, 12, 35, 36, 38, 1)
+    base(d)
+
+
+def rook(d):
+    base(d)
+    rect(d, 13, 32, 35, 38)
+    poly(d, [(16, 17), (32, 17), (33, 33), (15, 33)])
+    rect(d, 12, 7, 36, 17.5, 1)
+
+
+def rook_cut(d):
+    # Crenels, cut out of the top.
+    rect(d, 18.5, 6, 21.5, 11)
+    rect(d, 26.5, 6, 29.5, 11)
+
+
+def knight(d):
+    base(d)
+    poly(d, [(13, 38), (13.5, 31), (17, 25.5), (20.5, 21.5), (15, 23.5), (11, 25.5), (8, 23.5), (7.5, 20),
+             (13, 12.5), (15, 8), (17.5, 3.5), (20.5, 7.5), (26, 6.5), (32, 9.5), (36.5, 16), (38.5, 26),
+             (37, 38)])  # fmt: skip
+
+
+def bishop(d):
+    base(d)
+    circle(d, 24, 6, 3)
+    ellipse(d, 15.5, 10, 32.5, 30)
+    poly(d, [(24, 7.5), (30, 14), (18, 14)])
+    rect(d, 17, 28, 31, 33, 1.5)
+    poly(d, [(19, 32), (29, 32), (32.5, 38), (15.5, 38)])
+
+
+def queen(d):
+    base(d)
+    rect(d, 12, 31, 36, 38, 1)
+    poly(d, [(12.5, 33), (8, 14), (14.5, 25), (16, 10), (20.5, 24), (24, 8), (27.5, 24), (32, 10), (33.5, 25),
+             (40, 14), (35.5, 33)])  # fmt: skip
+    for x, y in ((8, 13), (16, 9), (24, 7), (32, 9), (40, 13)):
+        circle(d, x, y, 2.7)
+
+
+def king(d):
+    base(d)
+    rect(d, 12, 30, 36, 38, 1)
+    rect(d, 22.5, 1.5, 25.5, 13)
+    rect(d, 19, 4.5, 29, 7.5)
+    ellipse(d, 19.5, 11, 28.5, 25)
+    poly(d, [(12.5, 32), (8, 24.5), (10, 19.5), (15.5, 17.5), (21, 19.5), (24, 23), (27, 19.5), (32.5, 17.5),
+             (38, 19.5), (40, 24.5), (35.5, 32)])  # fmt: skip
+
+
+PIECES = {
+    "pawn": (pawn, None, [], []),
+    "knight": (knight, None, [[(24.5, 11.5), (30, 14.5), (33, 20.5), (34, 31)]], [(19, 12.5, 1.8)]),
+    "bishop": (bishop, None, [[(24, 15), (24, 24)], [(20.5, 19.5), (27.5, 19.5)], [(17.5, 33), (30.5, 33)]], []),
+    "rook": (rook, rook_cut, [[(14, 17.5), (34, 17.5)], [(14, 32.5), (34, 32.5)]], []),
+    "queen": (queen, None, [[(12, 33), (36, 33)], [(11, 38), (37, 38)]], []),
+    "king": (king, None, [[(24, 24), (24, 31)], [(12, 31.5), (36, 31.5)], [(11, 38), (37, 38)]], []),
+}
+
+
+def reduce(big):
+    return big.resize((SIZE, SIZE), Image.Resampling.BOX).point(lambda v: 255 if v >= 128 else 0)
+
+
+def grow(img, px):
+    for _ in range(px):
+        img = img.filter(ImageFilter.MaxFilter(3))
+    return img
+
+
+def shrink(img, px):
+    for _ in range(px):
+        img = img.filter(ImageFilter.MinFilter(3))
+    return img
+
+
+def layers(name):
+    shape, cut, lines, dots = PIECES[name]
+    big = Image.new("L", (s(SIZE), s(SIZE)), 0)
+    d = ImageDraw.Draw(big)
+    shape(d)
+    if cut:
+        holes = Image.new("L", big.size, 0)
+        cut(ImageDraw.Draw(holes))
+        big = ImageChops.subtract(big, holes)
+    fill = reduce(big)
+    inner = shrink(fill, 2)
+    outline = ImageChops.subtract(fill, inner)
+
+    marks = Image.new("L", big.size, 0)
+    dm = ImageDraw.Draw(marks)
+    for line in lines:
+        dm.line([(s(x), s(y)) for x, y in line], fill=255, width=int(s(LINE)), joint="curve")
+    for x, y, r in dots:
+        dm.ellipse([s(x - r), s(y - r), s(x + r), s(y + r)], fill=255)
+    detail = ImageChops.multiply(reduce(marks), inner)
+    return {
+        "halo": grow(fill, 2),
+        "fill": fill,
+        "line": ImageChops.lighter(outline, detail),
+        "detail": detail,
+    }
+
+
+def pack(img):
+    px = img.load()
+    out = []
+    for y in range(SIZE):
+        for xb in range(0, SIZE, 8):
+            byte = 0
+            for b in range(8):
+                if px[xb + b, y]:
+                    byte |= 0x80 >> b
+            out.append(byte)
+    return out
+
+
+def header(all_layers):
+    rows = [
+        "#pragma once",
+        "",
+        "// Generated by scripts/gen_chess_pieces.py; edit the script, not this file.",
+        "#include <cstdint>",
+        "",
+        "namespace x4::play::chess::pieces {",
+        "",
+        f"inline constexpr int SIZE = {SIZE};",
+        f"inline constexpr int STRIDE = {SIZE // 8};  // bytes per row, most significant bit first",
+        "",
+        "// One piece: see the script for what each layer is.",
+        "struct Bitmaps {",
+        f"  uint8_t halo[{SIZE * SIZE // 8}];",
+        f"  uint8_t fill[{SIZE * SIZE // 8}];",
+        f"  uint8_t line[{SIZE * SIZE // 8}];",
+        f"  uint8_t detail[{SIZE * SIZE // 8}];",
+        "};",
+        "",
+        "// Pawn, knight, bishop, rook, queen, king: chess::Type - 1.",
+        "inline constexpr Bitmaps PIECES[6] = {",
+    ]
+    for name, ls in all_layers.items():
+        rows.append(f"    {{  // {name}")
+        for key in ("halo", "fill", "line", "detail"):
+            data = pack(ls[key])
+            rows.append("        {")
+            for i in range(0, len(data), 12):
+                rows.append("            " + ", ".join(f"0x{b:02x}" for b in data[i : i + 12]) + ",")
+            rows.append("        },")
+        rows.append("    },")
+    rows += ["};", "", "}  // namespace x4::play::chess::pieces", ""]
+    return "\n".join(rows)
+
+
+def preview(all_layers, path, square=56, zoom=4):
+    names = list(all_layers)
+    img = Image.new("L", (square * len(names), square * 4), 255)
+    px = img.load()
+    for row in range(4):
+        black, dark = row % 2 == 1, row >= 2
+        for col, name in enumerate(names):
+            ox, oy = col * square, row * square
+            if dark:
+                for y in range(square):
+                    for x in range(square):
+                        px[ox + x, oy + y] = 0 if (x + y) % 2 == 0 else 255
+            ls = {k: v.load() for k, v in all_layers[name].items()}
+            off = (square - SIZE) // 2
+            for y in range(SIZE):
+                for x in range(SIZE):
+                    p = (ox + off + x, oy + off + y)
+                    if ls["halo"][x, y]:
+                        px[p] = 255
+                    if black:
+                        if ls["fill"][x, y]:
+                            px[p] = 0
+                        if ls["detail"][x, y]:
+                            px[p] = 255
+                    elif ls["line"][x, y]:
+                        px[p] = 0
+    img.resize((img.width * zoom, img.height * zoom), Image.Resampling.NEAREST).save(path)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--preview")
+    args = ap.parse_args()
+    all_layers = {name: layers(name) for name in PIECES}
+    with open(args.out, "w") as f:
+        f.write(header(all_layers))
+    if args.preview:
+        preview(all_layers, args.preview)
+
+
+if __name__ == "__main__":
+    main()

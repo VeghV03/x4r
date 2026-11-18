@@ -1,0 +1,15 @@
+# Sources for `x4 feed`, one feed a line. topic: carried into each entry's topics.
+max_per_feed: 2
+max_per_topic: 10
+feeds:
+  - {name: BBC World, url: "https://feeds.bbci.co.uk/news/world/rss.xml", topic: news}
+  - {name: The Guardian, url: "https://www.theguardian.com/world/rss", topic: news}
+  - {name: Al Jazeera, url: "https://www.aljazeera.com/xml/rss/all.xml", topic: news}
+  - {name: NPR, url: "https://feeds.npr.org/1001/rss.xml", topic: news}
+  - {name: ProPublica, url: "https://www.propublica.org/feeds/propublica/main", topic: news}
+  - {name: Aeon, url: "https://aeon.co/feed.rss", topic: ideas}
+  - {name: Psyche, url: "https://psyche.co/feed", topic: ideas}
+  - {name: Noema, url: "https://www.noemamag.com/feed/", topic: ideas}
+  - {name: Quanta, url: "https://api.quantamagazine.org/feed/", topic: science}
+  - {name: The Conversation, url: "https://theconversation.com/global/topics/science-112/articles.atom", topic: science}
+  - {name: Nautilus, url: "https://nautil.us/feed/", topic: science}

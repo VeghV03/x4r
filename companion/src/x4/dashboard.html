@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>x4 paper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Inter:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #fbfaf7; --ink: #141414; --gray: #8a8780; --line: #e3e0d8; --soft: #f1efe9; --bad: #b3261e;
+  --serif: "Literata", Georgia, serif; --sans: "Inter", -apple-system, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #161615; --ink: #ecebe6; --gray: #8d8b85; --line: #2e2d2a; --soft: #22211f; --bad: #f2b8b5; }
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); }
+body { margin: 0; color: var(--ink); background: var(--paper); font: 17px/1.5 var(--serif); -webkit-font-smoothing: antialiased; }
+main { max-width: 680px; margin: 0 auto; padding: 48px 20px 120px; }
+header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+h1 { font: 600 34px/1.1 var(--serif); margin: 0; letter-spacing: -0.01em; }
+#state { font: 500 13px var(--sans); color: var(--gray); white-space: nowrap; }
+#state.bad { color: var(--bad); }
+.rule { border-top: 3px double var(--ink); margin: 14px 0 0; height: 4px; border-bottom: 1px solid var(--ink); }
+nav { display: flex; flex-wrap: wrap; gap: 4px 22px; padding: 14px 0 0; }
+nav button { all: unset; cursor: pointer; font: 700 12px var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--gray); padding: 4px 0; border-bottom: 2px solid transparent; }
+nav button[aria-selected=true] { color: var(--ink); border-color: var(--ink); }
+#error { display: none; margin: 18px 0 0; font: 500 14px/1.45 var(--sans); color: var(--bad); }
+section.tab { display: none; padding-top: 26px; }
+section.tab.on { display: block; }
+.name, .label { font: 700 13px var(--sans); letter-spacing: .12em; text-transform: uppercase; }
+.label { color: var(--gray); margin: 34px 0 6px; }
+.label:first-child { margin-top: 0; }
+.row { position: relative; display: grid; grid-template-columns: 1fr auto; column-gap: 16px; padding: 12px 0 13px; border-bottom: 1px solid var(--line); }
+.row .min { font: 500 13px var(--sans); color: var(--gray); align-self: start; padding-top: 2px; font-variant-numeric: tabular-nums; }
+.row.fixed { color: var(--gray); }
+.row[draggable=true] { cursor: grab; }
+.row.drag { opacity: .35; }
+.row.over { box-shadow: 0 -2px 0 var(--ink) inset; }
+.x { all: unset; cursor: pointer; position: absolute; left: -30px; top: 12px; width: 20px; text-align: center; color: var(--gray); font: 18px/1 var(--sans); opacity: 0; transition: opacity .12s; }
+.row:hover .x, .x:focus-visible { opacity: 1; }
+input, textarea, select { font: inherit; color: inherit; background: none; border: 0; outline: 0; padding: 0; margin: 0; width: 100%; }
+input.name { text-transform: uppercase; }
+textarea { resize: none; overflow: hidden; display: block; }
+.what { grid-column: 1 / -1; margin-top: 2px; }
+.sub { font: 500 13px/1.4 var(--sans); color: var(--gray); overflow-wrap: anywhere; }
+::placeholder { color: var(--gray); opacity: .7; }
+.add { display: flex; gap: 14px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.add input { flex: 1; }
+.add .topic { flex: 0 0 110px; }
+button.go { all: unset; cursor: pointer; font: 700 12px var(--sans); letter-spacing: .12em; text-transform: uppercase; }
+button.go:disabled { color: var(--gray); cursor: default; }
+.note { width: 100%; min-height: 60vh; line-height: 1.6; }
+.film { min-height: 22vh; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.used { color: var(--gray); }
+.now .name, .now { font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 0 4px; }
+.chip { all: unset; cursor: pointer; font: 500 13px var(--sans); padding: 5px 11px; border: 1px solid var(--line); border-radius: 999px; color: var(--gray); }
+.chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+select { font: 600 22px var(--serif); cursor: pointer; appearance: none; -webkit-appearance: none; }
+a { color: inherit; }
+@media (max-width: 720px) { .x { position: static; opacity: 1; grid-column: 2; grid-row: 1; justify-self: end; } }
+</style>
+</head>
+<body>
+<main>
+  <header><h1 id="date"></h1><span id="state"></span></header>
+  <div class="rule"></div>
+  <nav role="tablist"></nav>
+  <div id="error"></div>
+
+  <section class="tab" data-tab="Paper"><div id="sections"></div></section>
+  <section class="tab" data-tab="Interests"><textarea class="note" id="interests" spellcheck="true"></textarea></section>
+  <section class="tab" data-tab="Sources">
+    <div class="label">Feeds</div><div id="feeds"></div>
+    <div class="label">Saved links</div><div id="inbox"></div>
+  </section>
+  <section class="tab" data-tab="Fields"><div id="fields"></div></section>
+  <section class="tab" data-tab="Football"><div id="football"></div></section>
+  <section class="tab" data-tab="Film">
+    <div class="label">Taste</div><textarea class="film" id="taste"></textarea>
+    <div class="label">Seen</div><textarea class="film" id="seen"></textarea>
+  </section>
+  <section class="tab" data-tab="Settings">
+    <div class="label">Claude writes in</div>
+    <select id="language"></select>
+  </section>
+</main>
+<script>
+const LANGS = { en: "English", hu: "Magyar", de: "Deutsch", fr: "Français", es: "Español", it: "Italiano", pt: "Português",
+  nl: "Nederlands", pl: "Polski", cs: "Čeština", ro: "Română", sv: "Svenska", fi: "Suomi", da: "Dansk", no: "Norsk" };
+const MAX_SECTIONS = 8;
+let S = null;
+const $ = (s) => document.querySelector(s);
+const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.createElement(tag), props); e.append(...kids.filter(k => k != null)); return e; };
+
+$("#date").textContent = new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+
+// Tabs
+let tabs = [...document.querySelectorAll("section.tab")];
+const nav = $("nav");
+function show(name) {
+  tabs.forEach(t => t.classList.toggle("on", t.dataset.tab === name));
+  nav.querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", b.textContent === name));
+  try { localStorage.setItem("x4.tab", name); } catch {}
+  tabs.find(t => t.dataset.tab === name).querySelectorAll("textarea").forEach(grow);
+}
+tabs.forEach(t => nav.append(el("button", { role: "tab", textContent: t.dataset.tab, onclick: () => show(t.dataset.tab) })));
+
+// Saving: one file at a time, the last value wins.
+const timers = {}, queue = {};
+let busy = false;
+function state(text, bad = false) { const s = $("#state"); s.textContent = text; s.classList.toggle("bad", bad); }
+function error(msg, details = []) {
+  const e = $("#error");
+  e.style.display = msg ? "block" : "none";
+  e.textContent = msg ? [msg, ...details].join(" · ") : "";
+}
+function save(what, value, wait = 600) {
+  queue[what] = value;
+  clearTimeout(timers[what]);
+  timers[what] = setTimeout(flush, wait);
+  state("Editing");
+}
+async function flush() {
+  if (busy) return;
+  const what = Object.keys(queue)[0];
+  if (!what) return;
+  const value = queue[what]; delete queue[what];
+  busy = true; state("Saving");
+  try {
+    const r = await fetch("/api/" + what, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(value) });
+    const d = await r.json();
+    if (!r.ok) { error(d.error, d.details); state("Not saved", true); }
+    else { error(d.warning); state(d.sent === false && d.warning ? "Saved here" : d.sent ? "Sent" : "Saved", !!d.warning); }
+  } catch { state("Offline", true); }
+  busy = false;
+  if (Object.keys(queue).length) flush();
+}
+
+function grow(t) { if (!t.offsetWidth) return; t.style.height = "auto"; t.style.height = t.scrollHeight + "px"; }
+const regrow = () => document.querySelectorAll("section.tab.on textarea").forEach(grow);
+new ResizeObserver(regrow).observe(document.querySelector("main"));
+document.fonts?.ready.then(regrow);
+function area(value, cls, oninput) {
+  const t = el("textarea", { className: cls, value, rows: 1 });
+  t.addEventListener("input", () => { grow(t); oninput(t.value); });
+  requestAnimationFrame(() => grow(t));
+  return t;
+}
+const minutes = (m) => (m ? `${m} min` : "");
+
+// Rows that can be dragged into a new order.
+function sortable(container, list, onchange) {
+  let from = null;
+  container.querySelectorAll(".row[draggable=true]").forEach((row, i) => {
+    row.addEventListener("dragstart", (e) => { from = i; row.classList.add("drag"); e.dataTransfer.effectAllowed = "move"; });
+    row.addEventListener("dragend", () => row.classList.remove("drag"));
+    row.addEventListener("dragover", (e) => { e.preventDefault(); row.classList.add("over"); });
+    row.addEventListener("dragleave", () => row.classList.remove("over"));
+    row.addEventListener("drop", (e) => {
+      e.preventDefault(); row.classList.remove("over");
+      if (from === null || from === i) return;
+      list.splice(i, 0, list.splice(from, 1)[0]); from = null; onchange();
+    });
+  });
+  // Text inside a draggable row stays selectable.
+  container.querySelectorAll("input, textarea").forEach(f => {
+    f.addEventListener("focus", () => f.closest(".row").draggable = false);
+    f.addEventListener("blur", () => f.closest(".row").draggable = true);
+  });
+}
+
+function drawSections() {
+  const box = $("#sections"); box.replaceChildren();
+  const list = S.sections, put = () => save("sections", list.map(({ name, what }) => ({ name, what })));
+  list.forEach((s, i) => {
+    const name = el("input", { className: "name", value: s.name, spellcheck: false, maxLength: 24 });
+    name.addEventListener("input", () => { name.value = name.value.replace(/:/g, ""); s.name = name.value; put(); });
+    const what = area(s.what, "what", (v) => { s.what = v; put(); });
+    what.addEventListener("keydown", (e) => e.key === "Enter" && (e.preventDefault(), what.blur()));
+    box.append(el("div", { className: "row", draggable: true },
+      el("button", { className: "x", textContent: "×", title: "Remove", onclick: () => { list.splice(i, 1); put(); drawSections(); } }),
+      name, el("span", { className: "min", textContent: minutes(s.minutes) }), what));
+  });
+  sortable(box, list, () => { put(); drawSections(); });
+  if (list.length < MAX_SECTIONS) {
+    const input = el("input", { className: "name", placeholder: "New section", maxLength: 24 });
+    input.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" || !input.value.trim()) return;
+      list.push({ name: input.value.trim(), what: "", minutes: 0 }); drawSections();
+      box.querySelectorAll(".what")[list.length - 1].focus();
+    });
+    box.append(el("div", { className: "add" }, input));
+  }
+  if (S.fixed) for (const [name, m] of [["Play", S.fixed.play], ["Book", S.fixed.book], ["Library", 0]])
+    box.append(el("div", { className: "row fixed" }, el("span", { className: "name", textContent: name }), el("span", { className: "min", textContent: minutes(m) })));
+}
+
+function drawFeeds() {
+  const box = $("#feeds"); box.replaceChildren();
+  const list = S.feeds, put = () => save("feeds", list, 0);
+  list.forEach((f, i) => box.append(el("div", { className: "row" },
+    el("button", { className: "x", textContent: "×", title: "Remove", onclick: () => { list.splice(i, 1); put(); drawFeeds(); } }),
+    el("div", {}, el("div", { textContent: f.name }), el("div", { className: "sub", textContent: f.url })),
+    el("span", { className: "min", textContent: f.topic || "" }))));
+  const url = el("input", { placeholder: "Feed address", type: "url" });
+  const name = el("input", { placeholder: "Name" });
+  const topic = el("input", { className: "topic", placeholder: "Topic" });
+  const add = () => {
+    if (!/^https?:\/\//.test(url.value.trim())) return url.focus();
+    list.push({ url: url.value.trim(), name: name.value.trim() || new URL(url.value.trim()).hostname.replace(/^www\./, ""), topic: topic.value.trim() });
+    put(); drawFeeds(); $("#feeds .add input").focus();
+  };
+  [url, name, topic].forEach(i => i.addEventListener("keydown", (e) => e.key === "Enter" && add()));
+  box.append(el("div", { className: "add" }, url, name, topic, el("button", { className: "go", textContent: "Add", onclick: add })));
+}
+
+function drawInbox() {
+  const box = $("#inbox"); box.replaceChildren();
+  const list = S.inbox, put = () => save("inbox", list, 0);
+  list.forEach((link, i) => box.append(el("div", { className: "row" },
+    el("button", { className: "x", textContent: "×", title: "Remove", onclick: () => { list.splice(i, 1); put(); drawInbox(); } }),
+    el("a", { href: link, target: "_blank", rel: "noopener", className: "sub", textContent: link }))));
+  const input = el("input", { placeholder: "Paste a link", type: "url" });
+  input.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" || !/^https?:\/\//.test(input.value.trim())) return;
+    list.push(input.value.trim()); put(); drawInbox(); $("#inbox .add input").focus();
+  });
+  box.append(el("div", { className: "add" }, input));
+}
+
+function drawFields() {
+  const box = $("#fields"); box.replaceChildren();
+  const list = S.fields, put = () => save("fields", list, 0);
+  const current = list.filter(f => f.week).map(f => f.week).sort().pop();
+  list.forEach((f, i) => {
+    const row = el("div", { className: "row" + (f.week ? (f.week === current ? " now" : " used") : ""), draggable: !f.week },
+      el("button", { className: "x", textContent: "×", title: "Remove", onclick: () => { list.splice(i, 1); put(); drawFields(); } }),
+      el("span", { textContent: f.name }), el("span", { className: "min", textContent: f.week ? f.week.replace("-w", " · week ") : "" }));
+    box.append(row);
+  });
+  // Only the fields still to come can move; dropping one onto a used field keeps the used ones first.
+  let from = null;
+  box.querySelectorAll(".row").forEach((row, i) => {
+    if (list[i].week) return;
+    row.addEventListener("dragstart", () => { from = i; row.classList.add("drag"); });
+    row.addEventListener("dragend", () => row.classList.remove("drag"));
+    row.addEventListener("dragover", (e) => { e.preventDefault(); row.classList.add("over"); });
+    row.addEventListener("dragleave", () => row.classList.remove("over"));
+    row.addEventListener("drop", (e) => { e.preventDefault(); if (from !== null && from !== i) { list.splice(i, 0, list.splice(from, 1)[0]); put(); } from = null; drawFields(); });
+  });
+  const input = el("input", { placeholder: "New field" });
+  input.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" || !input.value.trim()) return;
+    list.push({ name: input.value.trim(), week: null }); put(); drawFields(); $("#fields .add input").focus();
+  });
+  box.append(el("div", { className: "add" }, input));
+}
+
+const teamCache = {};
+async function drawFootball() {
+  const box = $("#football"); box.replaceChildren();
+  const F = S.football;
+  const put = () => save("football", { clubs: F.clubs, competitions: F.competitions, names: F.names }, 0);
+  if (!F.key) {
+    const key = el("input", { placeholder: "football-data.org key", spellcheck: false });
+    const go = () => { if (!key.value.trim()) return; save("football", { key: key.value.trim(), clubs: F.clubs, competitions: F.competitions, names: F.names }, 0); F.key = true; setTimeout(drawFootball, 900); };
+    key.addEventListener("keydown", (e) => e.key === "Enter" && go());
+    box.append(el("div", { className: "add" }, key, el("button", { className: "go", textContent: "Add", onclick: go })),
+      el("p", { className: "sub" }, el("a", { href: "https://www.football-data.org/client/register", target: "_blank", rel: "noopener", textContent: "Get a free key" })));
+    return;
+  }
+  const names = () => Object.fromEntries(Object.values(teamCache).flat().map(t => [String(t.id), t.name]));
+  const followed = el("div", { className: "chips" });
+  const drawFollowed = () => {
+    const known = { ...names(), ...F.names };
+    followed.replaceChildren(...F.clubs.map(id => el("button", { className: "chip on", textContent: known[String(id)] || `#${id}`,
+      onclick: () => { F.clubs = F.clubs.filter(c => c !== id); put(); drawFootball(); } })));
+  };
+  box.append(el("div", { className: "label" }, "Following"), followed);
+  box.append(el("div", { className: "label" }, "Competitions"),
+    el("div", { className: "chips" }, ...Object.entries(F.all).map(([code, name]) => el("button", {
+      className: "chip" + (F.competitions.includes(code) ? " on" : ""), textContent: name,
+      onclick: () => { F.competitions = F.competitions.includes(code) ? F.competitions.filter(c => c !== code) : [...F.competitions, code]; put(); drawFootball(); } }))));
+  drawFollowed();
+  for (const code of F.competitions) {
+    const chips = el("div", { className: "chips" });
+    box.append(el("div", { className: "label" }, F.all[code] || code), chips);
+    try {
+      if (!teamCache[code]) {
+        const r = await fetch("/api/teams/" + code); const d = await r.json();
+        if (!r.ok) { chips.append(el("span", { className: "sub", textContent: d.error })); continue; }
+        teamCache[code] = d;
+      }
+      chips.append(...teamCache[code].map(t => el("button", { className: "chip" + (F.clubs.includes(t.id) ? " on" : ""), textContent: t.name,
+        onclick: (e) => {
+          F.clubs = F.clubs.includes(t.id) ? F.clubs.filter(c => c !== t.id) : [...F.clubs, t.id];
+          e.target.classList.toggle("on"); put(); drawFollowed();
+        } })));
+      drawFollowed();
+    } catch { chips.append(el("span", { className: "sub", textContent: "Offline" })); }
+  }
+}
+
+function drawText(id) {
+  const t = $("#" + id); t.value = S[id];
+  t.oninput = () => { grow(t); save(id, t.value); };
+}
+
+function drawSettings() {
+  const sel = $("#language"); sel.replaceChildren();
+  const code = S.settings.language;
+  const langs = code in LANGS ? LANGS : { ...LANGS, [code]: code };
+  for (const [c, n] of Object.entries(langs)) sel.append(el("option", { value: c, textContent: n, selected: c === code }));
+  sel.onchange = () => save("settings", { language: sel.value }, 0);
+}
+
+async function load() {
+  const r = await fetch("/api/state");
+  S = await r.json();
+  if (!r.ok) return error(S.error, S.details);
+  if (S.fetched?.warning) error(S.fetched.warning);
+  state(S.repo ? "Up to date" : "");
+  // A panel shows only when its file is in the folder.
+  const has = (k) => k in S;
+  const panels = { Paper: ["sections"], Interests: ["interests"], Sources: ["feeds", "inbox"], Fields: ["fields"],
+    Football: ["football"], Film: ["taste", "seen"], Settings: ["settings"] };
+  if (has("sections")) drawSections();
+  if (has("feeds")) drawFeeds(); else $("#feeds").previousElementSibling.remove(), $("#feeds").remove();
+  if (has("inbox")) drawInbox(); else $("#inbox").previousElementSibling.remove(), $("#inbox").remove();
+  if (has("fields")) drawFields();
+  if (has("football")) drawFootball();
+  if (has("settings")) drawSettings();
+  for (const k of ["interests", "taste", "seen"]) if (has(k)) drawText(k); else if (k !== "interests") $("#" + k).previousElementSibling.remove(), $("#" + k).remove();
+  for (const [name, keys] of Object.entries(panels)) if (!keys.some(has)) {
+    tabs.splice(tabs.findIndex(t => t.dataset.tab === name), 1)[0].remove();
+    [...nav.children].find(b => b.textContent === name).remove();
+  }
+  let tab = tabs[0]?.dataset.tab; try { tab = localStorage.getItem("x4.tab") || tab; } catch {}
+  if (tabs.length) show(tabs.some(t => t.dataset.tab === tab) ? tab : tabs[0].dataset.tab);
+}
+window.addEventListener("beforeunload", (e) => { if (Object.keys(queue).length || busy) { flush(); e.preventDefault(); } });
+load();
+</script>
+</body>
+</html>

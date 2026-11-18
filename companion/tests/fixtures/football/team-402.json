@@ -1,0 +1,192 @@
+{
+ "filters": {
+  "competitions": "PL",
+  "permission": "TIER_ONE",
+  "dateFrom": "2026-11-02",
+  "dateTo": "2026-11-23",
+  "limit": 100
+ },
+ "resultSet": {
+  "count": 3,
+  "competitions": "PL",
+  "first": "2026-11-03",
+  "last": "2026-11-22",
+  "played": 2,
+  "wins": 1,
+  "draws": 1,
+  "losses": 0
+ },
+ "matches": [
+  {
+   "area": {
+    "id": 2072,
+    "name": "England",
+    "code": "ENG"
+   },
+   "competition": {
+    "id": 2021,
+    "name": "Premier League",
+    "code": "PL",
+    "type": "LEAGUE",
+    "emblem": "https://crests.football-data.org/PL.png"
+   },
+   "season": {
+    "id": 2400,
+    "startDate": "2026-08-15",
+    "endDate": "2027-05-23",
+    "currentMatchday": 11
+   },
+   "id": 1001,
+   "utcDate": "2026-11-08T15:00:00Z",
+   "status": "FINISHED",
+   "matchday": 11,
+   "stage": "REGULAR_SEASON",
+   "group": null,
+   "lastUpdated": "2026-11-09T10:00:00Z",
+   "homeTeam": {
+    "id": 397,
+    "name": "Brighton & Hove Albion FC",
+    "shortName": "Brighton Hove",
+    "tla": "BHA",
+    "crest": "https://crests.football-data.org/397.png"
+   },
+   "awayTeam": {
+    "id": 402,
+    "name": "Brentford FC",
+    "shortName": "Brentford",
+    "tla": "BRE",
+    "crest": "https://crests.football-data.org/402.png"
+   },
+   "score": {
+    "winner": null,
+    "duration": "REGULAR",
+    "fullTime": {
+     "home": 2,
+     "away": 1
+    },
+    "halfTime": {
+     "home": null,
+     "away": null
+    }
+   },
+   "odds": {
+    "msg": "Activate Odds-Package in User-Panel to retrieve odds."
+   },
+   "referees": []
+  },
+  {
+   "area": {
+    "id": 2072,
+    "name": "England",
+    "code": "ENG"
+   },
+   "competition": {
+    "id": 2021,
+    "name": "Premier League",
+    "code": "PL",
+    "type": "LEAGUE",
+    "emblem": "https://crests.football-data.org/PL.png"
+   },
+   "season": {
+    "id": 2400,
+    "startDate": "2026-08-15",
+    "endDate": "2027-05-23",
+    "currentMatchday": 11
+   },
+   "id": 1004,
+   "utcDate": "2026-11-15T15:00:00Z",
+   "status": "POSTPONED",
+   "matchday": 11,
+   "stage": "REGULAR_SEASON",
+   "group": null,
+   "lastUpdated": "2026-11-09T10:00:00Z",
+   "homeTeam": {
+    "id": 402,
+    "name": "Brentford FC",
+    "shortName": "Brentford",
+    "tla": "BRE",
+    "crest": "https://crests.football-data.org/402.png"
+   },
+   "awayTeam": {
+    "id": 57,
+    "name": "Arsenal FC",
+    "shortName": "Arsenal",
+    "tla": "ARS",
+    "crest": "https://crests.football-data.org/57.png"
+   },
+   "score": {
+    "winner": null,
+    "duration": "REGULAR",
+    "fullTime": {
+     "home": null,
+     "away": null
+    },
+    "halfTime": {
+     "home": null,
+     "away": null
+    }
+   },
+   "odds": {
+    "msg": "Activate Odds-Package in User-Panel to retrieve odds."
+   },
+   "referees": []
+  },
+  {
+   "area": {
+    "id": 2072,
+    "name": "England",
+    "code": "ENG"
+   },
+   "competition": {
+    "id": 2021,
+    "name": "Premier League",
+    "code": "PL",
+    "type": "LEAGUE",
+    "emblem": "https://crests.football-data.org/PL.png"
+   },
+   "season": {
+    "id": 2400,
+    "startDate": "2026-08-15",
+    "endDate": "2027-05-23",
+    "currentMatchday": 11
+   },
+   "id": 1005,
+   "utcDate": "2026-11-21T17:30:00Z",
+   "status": "SCHEDULED",
+   "matchday": 11,
+   "stage": "REGULAR_SEASON",
+   "group": null,
+   "lastUpdated": "2026-11-09T10:00:00Z",
+   "homeTeam": {
+    "id": 64,
+    "name": "Liverpool FC",
+    "shortName": "Liverpool",
+    "tla": "LIV",
+    "crest": "https://crests.football-data.org/64.png"
+   },
+   "awayTeam": {
+    "id": 402,
+    "name": "Brentford FC",
+    "shortName": "Brentford",
+    "tla": "BRE",
+    "crest": "https://crests.football-data.org/402.png"
+   },
+   "score": {
+    "winner": null,
+    "duration": "REGULAR",
+    "fullTime": {
+     "home": null,
+     "away": null
+    },
+    "halfTime": {
+     "home": null,
+     "away": null
+    }
+   },
+   "odds": {
+    "msg": "Activate Odds-Package in User-Panel to retrieve odds."
+   },
+   "referees": []
+  }
+ ]
+}

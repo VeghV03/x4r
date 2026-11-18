@@ -1,0 +1,10 @@
+net.json
+repo.json
+serve.json
+football.key
+cache/
+library/
+.outbox-*/
+*.tmp
+*.pending
+.DS_Store
