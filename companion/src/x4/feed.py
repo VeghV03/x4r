@@ -2,8 +2,10 @@
 
 - news: an optional news engine (settings.yaml news_engine), run in place (snapshot, then discover for each day since the
   last run). Each source URL is reported once, so a story seen before comes back only with
-  new coverage, and ranks by that new coverage. The top stories carry `primary`: the acts,
-  rulings and documents they rest on (primary.py).
+  new coverage, and ranks by that new coverage. A story is used up only when it was put in
+  front of a writer who could print it: a run after the day's issue went out holds what it
+  found for the next issue, and so does a story below the first MAX_NEWS. The top stories
+  carry `primary`: the acts, rulings and documents they rest on (primary.py).
 - follow: entries from ~/x4/feeds.yaml not reported before, a few per feed and per topic.
 - inbox: links saved in ~/x4/inbox.md.
 - interests: ~/x4/interests.md as written.
@@ -42,8 +44,9 @@ from .topics import tag
 NODE_MAJOR = 22
 TIMEOUT = 600  # seconds per engine script; the snapshot fetches ~15 feeds one by one
 MAX_DAYS = 14  # discover at most this many past days
-MAX_NEWS = 30
+MAX_NEWS = 60  # the engine's own cap for a day: the writer chooses, so it sees them all
 KEEP_DAYS = 30  # how long a reported news URL is remembered
+HELD_DAYS = 2  # how long a story nobody could print waits for an issue
 SUMMARY_CHARS = 200
 PER_FEED = 3  # follow entries per feed and per topic; feeds.yaml max_per_feed, max_per_topic
 PER_TOPIC = 10
@@ -92,20 +95,26 @@ PROXY_ENV = {"http_proxy", "https_proxy", "no_proxy", "all_proxy"}
 
 def engine_env() -> dict[str, str]:
     """A minimal environment without this tool's virtualenv: the engine's scripts call the
-    user's python3 (kozlony.mjs reads PDFs with pdfplumber when pdftotext is missing)."""
+    user's python3 (kozlony.mjs reads PDFs with pdfplumber when pdftotext is missing).
+
+    Node's fetch ignores proxy variables unless told otherwise; where the network has a proxy
+    (the cloud run), the engine must use it like every other tool, or it reaches only the
+    hosts the direct route allows."""
     env = {
         k: v
         for k, v in os.environ.items()
         if k in ENGINE_ENV or k.startswith(ENGINE_ENV_PREFIXES) or k.lower() in PROXY_ENV
     }
+    if any(k.lower() in ("https_proxy", "all_proxy") for k in env):
+        env["NODE_USE_ENV_PROXY"] = "1"
     if sys.prefix != sys.base_prefix:
         own = str(Path(sys.prefix) / "bin")
         env["PATH"] = os.pathsep.join(p for p in env.get("PATH", "").split(os.pathsep) if p.rstrip("/") != own)
     return env
 
 
-def run_node(root: Path, script: str, args: list[str], timeout: int = TIMEOUT) -> None:
-    """Run one engine script with the engine folder as working directory."""
+def run_node(root: Path, script: str, args: list[str], timeout: int = TIMEOUT) -> str:
+    """Run one engine script with the engine folder as working directory; returns its output."""
     try:
         r = subprocess.run(
             ["node", f"scripts/{script}", *args], cwd=root, env=engine_env(), capture_output=True, text=True, timeout=timeout
@@ -117,9 +126,20 @@ def run_node(root: Path, script: str, args: list[str], timeout: int = TIMEOUT) -
     if r.returncode:
         last = ((r.stderr or "").strip() or (r.stdout or "").strip()).splitlines()[-1:] or [""]
         raise EngineError(f"{script} failed (exit {r.returncode}): {last[0][:200]}")
+    return r.stdout or ""
 
 
 # news
+
+
+def _unreached(report: str | None, orgs: dict[str, str]) -> list[str]:
+    """A warning naming the sources the snapshot could not fetch, from its report's
+    'Nem élő: a, b' line, so a run's report says which outlets it did not read."""
+    m = re.search(r"Nem élő: (.+?) —", report or "")
+    if not m:
+        return []
+    names = [orgs.get(i.strip(), i.strip()) for i in m.group(1).split(",") if i.strip()]
+    return [f"news: not reached: {', '.join(names)}"] if names else []
 
 
 def _clean_url(url: str) -> str:
@@ -212,8 +232,8 @@ def _days(state: dict, today: date) -> list[str]:
     return [(first + timedelta(days=i)).isoformat() for i in range((today - first).days + 1)]
 
 
-def news(state: dict, today: date, root: Path | None) -> tuple[list[dict], list[str]]:
-    """Stories since the last run, most independent sources first. None without an engine."""
+def _discover(state: dict, today: date, root: Path | None) -> tuple[list[dict], list[str]]:
+    """The engine's stories for each day since the last issue; a failure is a warning. None without an engine."""
     if root is None:
         return [], []
     if not (root / "scripts" / "discover.mjs").is_file():
@@ -221,11 +241,13 @@ def news(state: dict, today: date, root: Path | None) -> tuple[list[dict], list[
     if warning := check_node():
         return [], [warning]
     warnings = []
+    report = None
     try:
-        run_node(root, "snapshot-feeds.mjs", [])
+        report = run_node(root, "snapshot-feeds.mjs", [])
     except EngineError as e:
         warnings.append(f"news: {e}")
     orgs = _orgs(root)
+    warnings += _unreached(report, orgs)
     raw: list[dict] = []
     discovered = False
     for day in _days(state, today):
@@ -244,23 +266,53 @@ def news(state: dict, today: date, root: Path | None) -> tuple[list[dict], list[
         raw += _candidates(data, orgs, day)
     if not discovered:
         return [], warnings or [f"news: no snapshot for {today}; run the engine's snapshot-feeds.mjs to see why"]
+    state["news_day"] = today.isoformat()
+    return raw, warnings
 
-    # Each URL once: strongest cluster first, nothing reported by an earlier run.
+
+def _merged(stories: list[dict]) -> list[dict]:
+    """One story for clusters that share an article or a claim: the same story found again by
+    a later run, or on another day."""
+    out: list[dict] = []
+    by_key: dict[str, dict] = {}
+    for s in stories:
+        keys = [x["url"] for x in s["sources"]] + ([f"claim:{s['claim']}"] if s.get("claim") else [])
+        into = next((by_key[k] for k in keys if k in by_key), None)
+        if into is None:
+            into = {**s, "sources": [], "primary": []}
+            out.append(into)
+        else:
+            into["day"] = max(into["day"], s["day"])
+            into["score"] = max(into["score"], s["score"])
+        for field in ("sources", "primary"):
+            have = {x["url"] for x in into[field]}
+            into[field] += [x for x in s.get(field) or [] if x["url"] not in have]
+        for k in keys:
+            by_key[k] = into
+    return out
+
+
+def news(state: dict, today: date, root: Path | None) -> tuple[list[dict], list[str]]:
+    """Stories nobody was shown yet, most independent sources first: the held ones and what
+    the engine finds now. Nothing is marked here; `feed` decides what was used up."""
+    cutoff = (today - timedelta(days=HELD_DAYS)).isoformat()
+    held = [s for s in state.get("news_held") or [] if s.get("day", "") >= cutoff]
+    found, warnings = _discover(state, today, root)
     seen: dict[str, str] = state.get("news_seen", {})
-    cutoff = (today - timedelta(days=KEEP_DAYS)).isoformat()
-    seen = {u: d for u, d in seen.items() if d >= cutoff}
-    raw.sort(key=lambda s: (-_k(s["sources"]), -s["score"], s["day"]))
     stories = []
-    for s in raw:
+    for s in _merged(held + found):
         s["sources"] = [x for x in s["sources"] if x["url"] not in seen]
-        for x in s["sources"]:
-            seen[x["url"]] = s["day"]
         if s["sources"]:
             stories.append(s)
-    state["news_seen"] = seen
-    state["news_day"] = today.isoformat()
-    stories.sort(key=lambda s: (-_k(s["sources"]), -s["score"]))
-    return [_story(s) for s in stories], warnings
+    stories.sort(key=lambda s: (-_k(s["sources"]), -s["score"], s["day"]))
+    return stories, warnings
+
+
+def _issue_out(h: Home) -> bool:
+    """True when today's issue went out already: no piece can be printed until tomorrow."""
+    from .ops import _sent_today
+
+    return _sent_today(h) is not None
 
 
 # follow
@@ -422,20 +474,31 @@ def interests(h: Home) -> str | None:
 def feed(h: Home, topic: str | None = None) -> dict:
     """Every candidate since the last run: news, follow, inbox, interests, warnings.
 
-    With `topic`, only that topic's stories and entries, and the run is not remembered."""
+    With `topic`, only that topic's stories and entries, and the run is not remembered. Once
+    today's issue went out nothing is used up either: the stories are held for the next issue."""
     state = read_json(h.feed_state, {})
     since = state.get("last")
     today = date.today()
     engine = settings.news_engine(h)
-    stories, w_news = news(state, today, engine)
+    raw, w_news = news(state, today, engine)
     entries, w_follow = follow(h, state)
+    shown = raw[:MAX_NEWS]
+    stories = [_story(s) for s in shown]
     if topic:
         stories = [s for s in stories if topic in s["topics"]]
         entries = [e for e in entries if topic in e.get("topics", [])]
-    stories = stories[:MAX_NEWS]
     w_primary = primary.attach(stories, engine, today, lambda *a: run_node(*a)) if stories else []
     links, w_inbox = inbox(h)
-    if not topic:
+    if not topic and _issue_out(h):
+        kept = read_json(h.feed_state, {})
+        kept["news_held"] = raw
+        write_json(pending(h.feed_state), kept)
+    elif not topic:
+        cutoff = (today - timedelta(days=KEEP_DAYS)).isoformat()
+        seen = {u: d for u, d in state.get("news_seen", {}).items() if d >= cutoff}
+        seen.update({x["url"]: s["day"] for s in shown for x in s["sources"]})
+        state["news_seen"] = seen
+        state["news_held"] = raw[MAX_NEWS:]
         state["last"] = datetime.now().astimezone().isoformat(timespec="seconds")
         write_json(pending(h.feed_state), state)
     return {

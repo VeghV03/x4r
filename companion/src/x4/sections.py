@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 from .errors import InvalidData
 from .home import Home
-from .models import ReadSource
+from .models import TESTS, ReadSource
 
 MAX = 8
 NAME_BYTES = 24
@@ -84,6 +84,8 @@ def check_reads(h: Home, sections: list[Section], reads: list[ReadSource]) -> li
             errors.append(f"{where}: needs head, its headline for the front page ({HEAD_CHARS} characters)")
         if not item.lead:
             errors.append(f"{where}: needs lead, what it says ({LEAD_CHARS} characters)")
+        if item.kind == "news" and item.test is None:
+            errors.append(f"{where}: needs test, the test its story passed: {', '.join(TESTS)}")
     if (n := sum(1 for i in reads if i.forecast)) > FORECASTS:
         errors.append(f"{h.read}: {n} forecasts; an issue asks {FORECASTS} at most")
     if (links := sum(1 for i in reads if i.kept and i.section is None)) > LINKS:

@@ -178,6 +178,7 @@ out of the device copy.
 | `thread` | A thread's id in `threads.jsonl` (above). |
 | `predict`, `link`, `forecast` | What the piece asks, below. |
 | `kept` | `true` on a link saved in `inbox.md`: it arrives in the Library's Kept, in no section. |
+| `test` | Mac copy only, on every `news` piece and no other: the editor's test its story passed, `life` (it changes daily life), `power` (it shifts power) or `reach` (everyone is talking about it). `x4` keeps it in `sent.jsonl` and never sends it to the X4. |
 
 A piece is read when a `read-log.jsonl` line says `finished`. A section's line on the front
 page is the `head` of its first piece not read. 32 pieces at most.
@@ -610,7 +611,9 @@ Every piece ever sent, each once, written by `x4` alone:
 the same page is sent again only under its old id. Links that differ only in tracking
 parameters, `www.`, a trailing slash or a fragment are the same page. `section` and `issue`
 (the date that first listed it) are the piece's; `listed` is every date that did, for a
-weekly piece listed again. `asked` is set once the piece asked a `predict` or `link`.
+weekly piece listed again. `asked` is set once the piece asked a `predict` or `link`. `test`
+is a news piece's (S9): with the read log it says which of the editor's tests brings the
+pieces that get read.
 
 ### Forecasts: `X4_HOME/forecasts.jsonl`
 

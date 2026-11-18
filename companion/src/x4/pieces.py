@@ -63,7 +63,8 @@ def minutes(h: Home, order: list[str], logs: dict[str, list[dict]], now: int | N
 
 def pieces(h: Home, today: date | None = None) -> list[dict]:
     """Every piece an issue listed in the last RECENT days, newest issue first: its section,
-    whether it was seen, opened, finished and kept, and its minutes."""
+    whether it was seen, opened, finished and kept, its minutes, and for a news piece the
+    test its story passed."""
     today = today or date.today()
     first = date.fromordinal(today.toordinal() - RECENT + 1).isoformat()
     lines = [x for x in sent(h).values() if x.get("section") and any(d >= first for d in _listed(x))]
@@ -89,5 +90,5 @@ def pieces(h: Home, today: date | None = None) -> list[dict]:
             "finished": any(r.finished for r in rs),
             "kept": kept.get(x["id"], False),
             "min": _minutes(sum(r.ms or 0 for r in rs)),
-        })
+        } | ({"test": x["test"]} if x.get("test") else {}))
     return out

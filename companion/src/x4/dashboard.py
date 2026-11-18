@@ -7,6 +7,7 @@ A panel shows only when its file is in the folder. This file and dashboard.html 
 their own, without the x4 package (`python dashboard.py --home <dir>`, needs PyYAML): then the
 sections, feeds, interests and saved links can be edited, and nothing is sent anywhere."""
 
+import html
 import json
 import re
 import threading
@@ -329,11 +330,15 @@ def teams(h: Home, code: str, client: "httpx.Client | None" = None) -> list[dict
     return out
 
 
-def _page() -> bytes:
-    return Path(__file__).with_name("dashboard.html").read_bytes()
+TITLE = "x4 paper"
 
 
-def handler(h: Home):
+def _page(title: str = TITLE) -> bytes:
+    page = Path(__file__).with_name("dashboard.html").read_text(encoding="utf-8")
+    return page.replace(f"<title>{TITLE}</title>", f"<title>{html.escape(title)}</title>", 1).encode()
+
+
+def handler(h: Home, title: str = TITLE):
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *args) -> None:
             pass
@@ -358,7 +363,7 @@ def handler(h: Home):
         def do_GET(self) -> None:
             try:
                 if self.path in ("/", "/index.html"):
-                    return self._send(200, _page(), "text/html; charset=utf-8")
+                    return self._send(200, _page(title), "text/html; charset=utf-8")
                 if self.path == "/api/state":
                     fetched = None
                     if not ALONE and datarepo.is_checkout(h):
@@ -389,8 +394,8 @@ def handler(h: Home):
     return Handler
 
 
-def serve(h: Home, port: int | None = None, open_browser: bool = True, ready=None) -> None:
-    server = ThreadingHTTPServer(("127.0.0.1", port or PORT), handler(h))
+def serve(h: Home, port: int | None = None, open_browser: bool = True, ready=None, title: str = TITLE) -> None:
+    server = ThreadingHTTPServer(("127.0.0.1", port or PORT), handler(h, title))
     url = f"http://127.0.0.1:{server.server_address[1]}/"
     if ready:
         ready({"url": url, "home": str(h.root)})
@@ -412,5 +417,6 @@ if __name__ == "__main__":
     ap.add_argument("--home", default=os.environ.get("X4_HOME") or "~/x4")
     ap.add_argument("--port", type=int, default=PORT)
     ap.add_argument("--no-open", action="store_true")
+    ap.add_argument("--title", default=TITLE, help="the page's title")
     a = ap.parse_args()
-    serve(Home(Path(a.home).expanduser()), a.port, not a.no_open, lambda d: print(d["url"], f"({d['home']})"))
+    serve(Home(Path(a.home).expanduser()), a.port, not a.no_open, lambda d: print(d["url"], f"({d['home']})"), a.title)

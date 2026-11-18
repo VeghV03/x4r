@@ -96,6 +96,11 @@ def test_a_save_is_sent_to_the_data_repo(h, tmp_path):
     assert log.strip() == "dashboard: inbox.md"
 
 
+def test_the_page_takes_a_title(h):
+    assert b"<title>Morning paper</title>" in dashboard._page("Morning paper")
+    assert b"<title>x4 paper</title>" in dashboard._page()
+
+
 def test_the_page_and_the_api_over_http(h):
     server = ThreadingHTTPServer(("127.0.0.1", 0), dashboard.handler(h))
     threading.Thread(target=server.serve_forever, daemon=True).start()

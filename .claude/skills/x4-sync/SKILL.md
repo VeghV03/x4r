@@ -24,7 +24,8 @@ wait for the cable, and finish with `x4 stage` (step 10). `x4 context` takes in 
 sent up over Wi-Fi, so the records are as fresh as its last fetch.
 
 When `context.issue` says today's issue was sent already (the afternoon run), skip step 4:
-the pieces are fixed for the day. Everything else is written as usual.
+the pieces are fixed for the day. Everything else is written as usual. `x4 feed` uses
+nothing up on such a run: the stories it finds are held for tomorrow's issue.
 
 ```bash
 x4 pull --json
@@ -42,7 +43,7 @@ x4 feed --json
 sync (`lookups`, each with its book's title), deleted highlights, card results (weak cards
 first), books with progress, unseen bites and puzzles, book-puzzle results, play levels and
 results, which articles were finished or left (`read`), `interests.md` and pending inbox
-links. `feed` has the candidates: `news` (stories since the last sync, ranked by `k`, the
+links. `feed` has the candidates: `news` (stories since the last issue, 60 at most, listed by `k`, the
 number of independent sources, with `topics` and, for the top stories, `primary` documents),
 `follow` (new posts from the user's feeds, with `topics`), `inbox` (links they saved) and
 `interests`. Both report the same new items until `x4 sync` succeeds; run them again freely.
@@ -121,7 +122,7 @@ is wrong.
 A piece is an original article, whole, in its own language, linked by `url`:
 
 ```json
-{"id":"r-2026-11-12-1","section":"news","kind":"news","url":"https://…","head":"Budget passes after all-night vote","lead":"The deficit target holds; two ministries lose a fifth."}
+{"id":"r-2026-11-12-1","section":"news","kind":"news","test":"power","url":"https://…","head":"Budget passes after all-night vote","lead":"The deficit target holds; two ministries lose a fifth."}
 ```
 
 - `section`: the section's name in lower case, accents dropped, spaces as `-` (`x4` names
@@ -132,25 +133,48 @@ A piece is an original article, whole, in its own language, linked by `url`:
 - `lead`: what the piece says, 60 characters at most, in the piece's language: the one
   sentence you would tell someone deciding whether to read it. It adds to the headline,
   never repeats it.
-- `kind`: `news` (a news section), `found` (an article you found), `follow` (from the user's
-  feeds), `field`, `analysis`, `dossier`, `translation`, `film`.
+- `kind`: `news` (a story in a news section, chosen by the tests below, wherever you found
+  its article), `found` (an article you found), `follow` (from the user's feeds), `field`,
+  `analysis`, `dossier`, `translation`, `film`.
+- `test`, on every `news` piece and no other: the test its story passed, `life`, `power` or
+  `reach`. The first it passes, honestly: the user reads these against what they finished,
+  to check your judgement. It never reaches the X4.
 
-`x4` refuses a section with more than three pieces, a piece without `head` or `lead`, and
-either one too long.
+`x4` refuses a section with more than three pieces, a piece without `head` or `lead`,
+either one too long, and a `news` piece without `test`.
 
 What each section takes, beyond its line in `sections.md`:
 
-- **News sections** (a line that asks for the day's stories): the day's biggest stories in
-  what the line names. With a news engine set up, they come ranked in `feed.news` by `k`,
-  the number of independent sources; without one, rank the stories in `feed.follow` and on
-  the web by how many independent outlets carry them. For each, the single best article on
-  it that can be read whole without paying: the fullest account from the outlet that did the
-  reporting, before a wire rewrite. When the story rests on a document (a law, a ruling, a
-  statement) and the document is short and readable, the document itself may be the piece.
-  Never two pieces on one story; never the same outlet three times in a section. A source
-  with `"piece": false` (a paywalled outlet, or one the engine counts but never shows) counts
-  in `k` and is never the piece; when a story has no other source, find the piece on the
-  web or leave the story out.
+- **News sections** (a line that asks for the day's stories): you are the editor. With a
+  news engine set up, the stories come in `feed.news` with `k`, the number of independent
+  sources; without one, find them in `feed.follow` and on the web, and count the independent
+  outlets that carry each. `k` says how widely a story was carried: a hint, never the
+  ranking, so read all of them, the stories with a low `k` too. A story earns a slot by
+  passing one of three tests, and when more pass than there are slots the earlier test wins:
+  1. `life`, it changes daily life: a decision that changes what people can do, get or must pay
+     (rights, health, schools, taxes, prices, public services);
+  2. `power`, it shifts power: who controls what (appointments, courts, institutions, election
+     rules, EU money, a corruption case that reaches the people who decide);
+  3. `reach`, everyone is talking about it: carried so widely that not knowing it is a gap,
+     whatever it changes.
+
+  Between two stories that pass the same test, take the one whose best article explains
+  the mechanism: why it happens and what it makes people do. Measures announced together
+  are one story, and its piece is the article that covers the whole package. For each
+  story, the single best article on it that can be read whole without paying: the fullest
+  account from the outlet that did the reporting, before a wire rewrite. When the story rests on a
+  document (a law, a ruling, a statement) and the document is short and readable, the
+  document itself may be the piece. Never two pieces on one story; never the same outlet
+  three times in a section. A source with `"piece": false` (a paywalled outlet, or one the
+  engine counts but never shows) counts in `k` and is never the piece; when a story has no
+  other source, find the piece on the web or leave the story out.
+- **A news section whose line asks for pieces that explain**: analysis and long reporting on
+  where a story stands, found on the web when `feed.news` has only the day's reports. An
+  event alone (a meeting announced, a strike, a statement) gets a slot only on test 3, and
+  then as the deepest article on it. Never a wire rewrite, an agency bulletin or a
+  situation report as the piece (UN News, ReliefWeb, OCHA): those say a story exists. When
+  the line puts places first, look for their pieces first; between pieces of equal worth
+  they come before the rest.
 - **A piece in a language the user does not read** (any but the writing language and
   English): a scholarly essay or good reporting in English by `url` when there is one. Else a
   digest you write, kind `translation`, at most 450 words: what it reports and argues, its
@@ -162,7 +186,10 @@ What each section takes, beyond its line in `sections.md`:
   line: essays, research written for readers, practitioner pieces with a worked case. Prefer
   the piece with an argument or a finding over the piece with an opinion. No paywalled
   pages, never the same site twice in an issue. The best 2 to 4 new posts from `feed.follow`
-  go where they belong.
+  go where they belong. A section whose line asks for pieces found before the feeds the user
+  follows takes them from sites the user does not follow and that were not in that section
+  in the last two weeks (`sent.jsonl` has what went out); a `feed.follow` post takes one of
+  its slots only when it beats everything you found, one an issue at most.
 - **Field**, two pieces, every calendar week: the field of the week, which is how the user
   reads outside their topics. `~/x4/fields.md` is the user's list, one field a line, in
   their order; never edit it except to mark a line used. When this ISO week has no field
@@ -314,7 +341,7 @@ went out already, it sent that issue again and left your new pieces out: say so,
 the next issue tomorrow. Saved links still arrive.
 
 Learn from `context.read` and `context.pieces` (each piece of the last two weeks: seen,
-opened, finished, kept, minutes) and from the week's minutes per section in `x4 status`:
+opened, finished, kept, minutes, and a news piece's `test`) and from the week's minutes per section in `x4 status`:
 sections, topics and outlets the user passes over or leaves unfinished get fewer pieces,
 finished ones the better slots. A piece not `seen` was never in front of them; it says
 nothing about the piece. Ids: `r-<yyyy-mm-dd>-<n>`.

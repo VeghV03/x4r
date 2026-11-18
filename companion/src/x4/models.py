@@ -312,6 +312,7 @@ STREAM_ITEM = TypeAdapter(StreamItem)
 # Read list
 
 
+TESTS = ("life", "power", "reach")  # the editor's tests a story in a news section passes (S4)
 READ_KINDS = ("news", "follow", "found", "link", "translation", "dossier", "field", "film", "analysis")
 HEAD_CHARS = 30  # one line on the front page
 LEAD_CHARS = 60  # two lines under a headline
@@ -362,6 +363,7 @@ class ReadSource(Strict):
     head: Text | None = None
     lead: Text | None = None
     kept: bool | None = None
+    test: Literal[TESTS] | None = None  # a news piece: the test its story passed (S9); never sent to the X4
     # What the piece carries (SPEC: A piece): the running story it belongs to, a question asked
     # before it, and after it a link or a forecast, never both.
     thread: Id | None = None
@@ -374,6 +376,8 @@ class ReadSource(Strict):
     def _check(self):
         if (self.kind == "film") != (self.film is not None):
             raise ValueError("film: a film pick (kind film) gives film: {\"title\": its original title, \"year\": …, \"season\": … for a series}; no other kind has it")
+        if self.test is not None and self.kind != "news":
+            raise ValueError("test: only a news piece names the test its story passed; leave it out")
         if self.link is not None and self.forecast is not None:
             raise ValueError("link, forecast: one thing follows a piece beside its answer; give it a link or a forecast")
         for field, limit in (("head", HEAD_CHARS), ("lead", LEAD_CHARS)):

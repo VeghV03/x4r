@@ -95,9 +95,12 @@ Files pushed from outside `X4_HOME` are copied into it, so `x4 sync` always work
 `x4 sync` fetches and uploads.
 
 - `news`: only with a news engine set up (`news_engine` in `settings.yaml`, or
-  `X4_NEWS_ENGINE`; the engine is not part of this repo and needs Node 22+): snapshot, then discover for every day
-  since the last run. Stories rank by `k`, the number of independent sources. Each source URL
-  is reported once, so a known story returns only with new coverage. A source with
+  `X4_NEWS_ENGINE`; the engine is not part of this repo and needs Node 22+): snapshot, then
+  discover for every day since the last run. Stories are listed by `k`, the number of
+  independent sources: a hint for the writer, who chooses. Each source URL is reported once,
+  so a known story returns only with new coverage. A story is used up only when a writer who
+  could print it saw it: a run after the day's issue went out holds its stories for the next
+  issue (two days at most), and so does a story below the first 60. A source with
   `"piece": false` counts in `k` but is never the piece: the government-aligned press, and
   paywalled outlets, which also carry `"paywalled": true`. Those come last in `sources`.
 - `primary`, on the top 8 stories: the documents a story rests on, each `{title, url, kind,
@@ -121,7 +124,8 @@ Files pushed from outside `X4_HOME` are copied into it, so `x4 sync` always work
 `read.jsonl` lines are the issue's pieces (docs/DATA.md, "The issue"). They need `id` (`r-…`),
 `kind` (`news`, `follow`, `found`, `link`, `translation` for an article Claude digested,
 `dossier` for a club dossier, `field`, `film`, `analysis`), `section`, `head` and `lead`, and
-`url` or `file`.
+`url` or `file`. A `news` piece also needs `test`, the editor's test its story passed
+(`life`, `power` or `reach`); it stays on the Mac, in `sent.jsonl`.
 A `file` is a saved web page (`.html`, cleaned like any page) or an article in Markdown
 (`.md`), converted as written:
 

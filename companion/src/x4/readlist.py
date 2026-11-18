@@ -36,6 +36,7 @@ class Ready:
     epub: Path
     url: str | None
     file: str | None = None  # as the Read list names it
+    test: str | None = None  # the test a news piece's story passed, for sent.jsonl alone
 
     @property
     def remote(self) -> str:
@@ -138,7 +139,7 @@ def prepare(h: Home, items: list[ReadSource]) -> tuple[list[Ready], list[str]]:
         }
         record |= {k: v for k in ("section", "head", "lead", "kept", "thread") if (v := getattr(item, k)) is not None}
         record |= {k: v.model_dump() for k in ("predict", "link", "forecast") if (v := getattr(item, k)) is not None}
-        ready.append(Ready(record, h.cache / entry["epub"], item.url, item.file))
+        ready.append(Ready(record, h.cache / entry["epub"], item.url, item.file, item.test))
     h.cache.mkdir(parents=True, exist_ok=True)
     write_json(index_path, index)
     return ready, warnings
@@ -165,7 +166,8 @@ def article(h: Home, read_id: str) -> dict:
 def sent(h: Home) -> dict[str, dict]:
     """Read id -> its line in X4_HOME/sent.jsonl: `id`, `kind`, `title`, `url` or `file`, the day
     it was first `sent`, and `asked` once a set article asked a question about it. A piece of a
-    section has `section`, the `issue` that first listed it and `listed`, every issue that did."""
+    section has `section`, the `issue` that first listed it and `listed`, every issue that did; a
+    news piece has `test`, the editor's test its story passed."""
     return {r["id"]: r for r in read_jsonl(h.sent)} if h.sent.exists() else {}
 
 
@@ -182,6 +184,8 @@ def note_sent(h: Home, ready: list[Ready], today: date) -> None:
             if "section" in r.record:
                 line |= {"section": r.record["section"], "issue": issue}
             line["url" if r.url else "file"] = r.url or r.file
+            if r.test:
+                line["test"] = r.test
             known[line["id"]] = line
             changed = True
         if line.get("section") and issue not in line.get("listed", []):

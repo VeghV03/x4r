@@ -18,7 +18,7 @@ World: the US, the EU, Palestine and China
 
 def piece(n, section="hungary", **more):
     return {"id": f"r-{n}", "kind": "news", "url": ARTICLE if n % 2 else HU_ARTICLE, "section": section,
-            "head": "A short headline", "lead": "What the piece says, in a line or two."} | more
+            "head": "A short headline", "lead": "What the piece says, in a line or two.", "test": "life"} | more
 
 
 def test_sections_are_names_in_order(h):
@@ -54,6 +54,8 @@ def test_the_issue_starts_with_its_date_and_sections(dev, sim, h, web):  # noqa:
         ("r-2", "world", "A short headline", "What the piece says, in a line or two.")]
     sent = {r["id"]: r for r in map(json.loads, h.sent.read_text().splitlines())}
     assert sent["r-1"]["section"] == "hungary" and sent["r-1"]["issue"] == head["date"]
+    # The test a story passed is the writer's record: kept in sent.jsonl, never sent to the X4.
+    assert sent["r-1"]["test"] == "life" and all("test" not in p for p in pieces)
 
 
 @pytest.mark.parametrize("item, error", [
@@ -61,6 +63,9 @@ def test_the_issue_starts_with_its_date_and_sections(dev, sim, h, web):  # noqa:
     (piece(1, "sport"), "section 'sport' is not in sections.md"),
     (piece(1, head=None), "needs head"),
     (piece(1, lead=None), "needs lead"),
+    (piece(1, test=None), "needs test, the test its story passed: life, power, reach"),
+    (piece(1, test="big"), "test: must be one of 'life', 'power' or 'reach', got 'big'"),
+    (piece(1, kind="found"), "test: only a news piece names the test its story passed"),
     (piece(1, head="x" * 31), "head: 31 characters; it has room for 30"),
     (piece(1, lead="x" * 61), "lead: 61 characters; it has room for 60"),
 ])

@@ -35,7 +35,7 @@ def test_minutes_of_the_week_go_by_section_in_the_front_pages_order(h):
 def test_pieces_say_whether_they_were_seen_opened_finished_and_kept(h):
     old = days.to_date(TODAY - 20).isoformat()
     write_jsonl(h.sent, [
-        piece("r-1", "world", ISSUE),
+        piece("r-1", "world", ISSUE) | {"test": "power"},
         piece("r-2", "field", WEEK_AGO, ISSUE),  # the field's primer, listed again
         piece("r-3", "world", WEEK_AGO),
         piece("r-0", "world", old),  # past the two weeks
@@ -57,6 +57,7 @@ def test_pieces_say_whether_they_were_seen_opened_finished_and_kept(h):
         "r-3": ("world", WEEK_AGO, False, False, False, True, 0),  # World was visited in another issue
     }
     assert [p["id"] for p in pieces(h)][-1] == "r-3"  # newest issue first
+    assert [p.get("test") for p in pieces(h)] == ["power", None, None]  # the test a news piece's story passed
 
 
 def test_every_issue_that_lists_a_piece_is_remembered(h, tmp_path):

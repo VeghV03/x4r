@@ -170,6 +170,50 @@ def test_news_reports_each_url_once(h, engine):
     assert again["since"] is not None
 
 
+def issue_out(h, day: str = TODAY):
+    """Today's issue went out: what `x4 sync` and `x4 stage` leave in .sync.json."""
+    h.sync_state.write_text(json.dumps({"issue": {"date": day, "reads": []}}))
+
+
+def test_after_the_issue_went_out_stories_are_held_for_the_next_one(h, engine):
+    issue_out(h)
+    afternoon = feed(h)["news"]  # the second pass: it cannot print a piece
+    assert afternoon[0]["title"] == "VIP-bankkártyával éttermeztek a hivatal vezetői"
+    state = read_json(h.feed_state, {})
+    assert "news_seen" not in state and "follow_seen" not in state and len(state["news_held"]) == 3
+
+    # The next morning, in a fresh clone of the engine: the feeds no longer carry the story.
+    h.sync_state.unlink()
+    engine.payload["data"] = lambda day: {"day": day, "candidates": [{"claimKey": "new", "pont": 5, "members": [
+        member("hvg", "Új részletek a VIP-kártyákról", "https://hvg.hu/vip"),
+        member("telex", "VIP-bankkártyával éttermeztek a hivatal vezetői", "https://telex.hu/belfold/vip"),
+    ]}]}  # fmt: skip
+    morning = feed(h)["news"]
+    first = morning[0]
+    assert first["k"] == 4 and [x["org"] for x in first["sources"]] == ["Telex", "444", "reuters", "hvg", "24.hu"]
+    assert len(morning) == 3  # the held story and its new coverage are one story
+    state = read_json(h.feed_state, {})
+    assert state["news_held"] == [] and "https://444.hu/vip?x=1" in state["news_seen"]
+    assert feed(h)["news"] == []
+
+
+def test_a_held_story_waits_two_days(h, engine):
+    old = date.fromordinal(date.today().toordinal() - 3).isoformat()
+    story = {"day": old, "claim": "old", "score": 1, "primary": [], "sources": [
+        {"org": "Telex", "url": "https://telex.hu/old", "lang": "hu", "title": "Régi hír", "brand": "telex"}]}  # fmt: skip
+    h.feed_state.write_text(json.dumps({"news_held": [story, story | {"day": TODAY, "claim": "kept"}]}))
+    engine.payload["data"] = lambda day: {"day": day, "candidates": []}
+    assert [s["claim"] for s in feed(h)["news"]] == ["kept"]
+
+
+def test_stories_below_the_cap_come_back(h, engine, monkeypatch):
+    monkeypatch.setattr(feedmod, "MAX_NEWS", 1)
+    assert [s["title"] for s in feed(h)["news"]] == ["VIP-bankkártyával éttermeztek a hivatal vezetői"]
+    assert [s["title"] for s in feed(h)["news"]] == ["Wire only"]
+    assert [s["title"] for s in feed(h)["news"]] == ["Storm hits London"]
+    assert feed(h)["news"] == []
+
+
 def test_aligned_and_paywalled_sources_count_but_are_never_the_piece(h, engine):
     def day(d: str) -> dict:
         return {"day": d, "candidates": [{"claimKey": "budget", "pont": 9, "members": [
@@ -216,6 +260,35 @@ def test_missing_node_is_a_warning(h, engine, monkeypatch):
     out = feed(h)
     assert out["news"] == [] and out["warnings"] == ["news: Node.js not found; install Node 22+ (brew install node)"]
     assert "news_day" not in read_json(h.feed_state, {})
+
+
+def test_sources_the_snapshot_could_not_reach_are_a_warning(h, engine, monkeypatch):
+    fake = feedmod.run_node
+
+    def run_node(r, script, args, timeout=0):
+        fake(r, script, args, timeout)
+        if script == "snapshot-feeds.mjs":
+            return "  37 él, 2 nem.\n  Nem élő: telex, merce — az URL-jeik feltételezettek voltak.\n"
+        return ""
+
+    monkeypatch.setattr(feedmod, "run_node", run_node)
+    out = feed(h)
+    assert "news: not reached: Telex, merce" in out["warnings"]
+    assert out["news"]
+
+
+def test_every_source_reached_is_no_warning(h, engine):
+    out = feed(h)
+    assert not [w for w in out["warnings"] if "not reached" in w]
+
+
+def test_engine_uses_the_proxy_only_where_there_is_one(monkeypatch):
+    for k in ("https_proxy", "HTTPS_PROXY", "all_proxy", "ALL_PROXY", "NODE_USE_ENV_PROXY"):
+        monkeypatch.delenv(k, raising=False)
+    assert "NODE_USE_ENV_PROXY" not in feedmod.engine_env()
+    monkeypatch.setenv("HTTPS_PROXY", "http://127.0.0.1:3128")
+    env = feedmod.engine_env()
+    assert env["NODE_USE_ENV_PROXY"] == "1" and env["HTTPS_PROXY"] == "http://127.0.0.1:3128"
 
 
 def test_failing_engine_is_a_warning(h, engine, monkeypatch):
